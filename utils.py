@@ -28,7 +28,7 @@ class Person():
     def __str__(self):
         return f'{self.creatorName}, {self.email}, {self.affiliation}'
 
-class Creator(person):
+class Creator(Person):
     def __init__(self, *args):
         super().__init__(*args)
         self.creatorName = self.familyName + ', ' + self.givenName
