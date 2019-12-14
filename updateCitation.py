@@ -12,6 +12,7 @@ You have to specify MIP(`activity_id`), model(`source_id`) to get base
 info, and have to specify experiments(`experiment_id`) to submit
 experiment-granularity info.
 """
+from utils import getJSON
 import json
 import certifi
 import urllib3
@@ -22,12 +23,13 @@ __credits__ = 'Copyright (c) 2019 RIST'
 __version__ = 'v20190626'
 __date__ = '2019/06/26'
 
-baseGetUrl = 'https://cera-www.dkrz.de/WDCC/ui/cerasearch/cerarest/exportcmip6'
-basePostUrl = "http://ceracite.dkrz.de:5000/api/v1/citation"
+# baseGetUrl = 'https://cera-www.dkrz.de/WDCC/ui/cerasearch/cerarest/exportcmip6'
+# basePostUrl = "http://ceracite.dkrz.de:5000/api/v1/citation"
 
 mip = 'CMIP'
 model = 'MIROC6'
-# experiments = ('historical')
+inst = 'MIROC'
+experiments = ('historical')
 
 # model = 'NICAM16-7S'
 # mip = 'HighResMIP'
@@ -63,6 +65,10 @@ def my_parser():
                         type=str,
                         help='MIP(activity_id)',
                         default=mip)
+    parser.add_argument('-i', '--inst', '--institution_id',
+                        type=str,
+                        help='institution(institution_id)',
+                        default=inst)
 
     parser.add_argument('-l', '--loadfile',
                         type=str,
@@ -71,30 +77,30 @@ def my_parser():
     return parser
 
 
-def getJSON(source_id='MIROC6', activity_id='CMIP',
-            institution_id='MIROC', experiment_id=None):
-    """
-    Access Citation web cite and get JSON for given CV's.
-    """
+# def getJSON(source_id='MIROC6', activity_id='CMIP',
+#             institution_id='MIROC', experiment_id=None):
+#     """
+#     Access Citation web cite and get JSON for given CV's.
+#     """
 
-    drs = '.'.join(['CMIP6', activity_id, institution_id, source_id])
-    if experiment_id is not None:
-        drs += '.' + experiment_id
-    fields = {'input': drs}
+#     drs = '.'.join(['CMIP6', activity_id, institution_id, source_id])
+#     if experiment_id is not None:
+#         drs += '.' + experiment_id
+#     fields = {'input': drs}
 
-    print('HTTP access with DRS:', drs)
-    http = urllib3.PoolManager(
-        cert_reqs='CERT_REQUIRED',
-        ca_certs=certifi.where())
-    r = http.request_encode_url('GET', baseGetUrl, fields=fields)
+#     print('HTTP access with DRS:', drs)
+#     http = urllib3.PoolManager(
+#         cert_reqs='CERT_REQUIRED',
+#         ca_certs=certifi.where())
+#     r = http.request_encode_url('GET', baseGetUrl, fields=fields)
 
-    if (r.status != 200):
-        print('Bad Status:', r.status)
-        d = eval(r.data.decode('utf-8'))
-        print(d['error'])
-        return None
-    jsonData = json.loads(r.data.decode('utf-8'))
-    return jsonData
+#     if (r.status != 200):
+#         print('Bad Status:', r.status)
+#         d = eval(r.data.decode('utf-8'))
+#         print(d['error'])
+#         return None
+#     jsonData = json.loads(r.data.decode('utf-8'))
+#     return jsonData
 
 
 def loadJSON(fname=None,
@@ -212,7 +218,7 @@ def main():
             print('  loadfile: specified but no a.')
 
     if (a.loadfile is None):
-        base = getJSON(source_id=a.model, activity_id=a.mip)
+        base = getJSON(source_id=a.model, activity_id=a.mip, institution_id=a.inst)
     else:
         base = loadJSON(a.loadfile, source_id=a.model, activity_id=a.mip)
 
