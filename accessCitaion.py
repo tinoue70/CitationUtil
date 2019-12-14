@@ -10,18 +10,16 @@ You have to specify MIP(`activity_id`), model(`source_id`),
 experiment(`experiment_id`) to get info.
 
 """
+from utils import getJSON
 import json
-import certifi
-import urllib3
+# import certifi
+# import urllib3
 import argparse
 
 __author__ = 'T.Inoue'
 __credits__ = 'Copyright (c) 2019 JAMSTEC'
 __version__ = 'v20191213'
 __date__ = '2019/12/13'
-
-baseGetUrl = 'https://cera-www.dkrz.de/WDCC/ui/cerasearch/cerarest/exportcmip6'
-basePostUrl = "http://ceracite.dkrz.de:5000/api/v1/citation"
 
 
 mip = 'CMIP'
@@ -65,32 +63,6 @@ def my_parser():
     return parser
 
 
-def getJSON(source_id=None, activity_id=None,
-            institution_id=None, experiment_id=None):
-    """
-    Access Citation web cite and get JSON for given CV's.
-    """
-
-    drs = '.'.join(['CMIP6', activity_id, institution_id, source_id])
-    if experiment_id is not None:
-        drs += '.' + experiment_id
-    fields = {'input': drs}
-
-    print('HTTP access with DRS:', drs)
-    http = urllib3.PoolManager(
-        cert_reqs='CERT_REQUIRED',
-        ca_certs=certifi.where())
-    r = http.request_encode_url('GET', baseGetUrl, fields=fields)
-
-    if (r.status != 200):
-        print('Bad Status:', r.status)
-        d = eval(r.data.decode('utf-8'))
-        print(d['error'])
-        return None
-    jsonData = json.loads(r.data.decode('utf-8'))
-    return jsonData
-
-
 def main():
 
     parser = my_parser()
@@ -102,7 +74,6 @@ def main():
         print('  model:', a.model)
         print('  institution:', a.inst)
         print('  experiments:', a.exp)
-
 
     base = getJSON(source_id=a.model, activity_id=a.mip, institution_id=a.inst, experiment_id=a.exp)
     if (base is None):
