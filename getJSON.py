@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8-*-
 """\
-Get CMIP6 Citation info with the experiment granularity.
+Get CMIP6 Citation info and save as a JSON file.
 
 ---
-This script gets experiment-granularity info from the citation service.
+This script gets Citation info from the citation service.
 
 You have to specify MIP(`activity_id`), model(`source_id`),
-experiment(`experiment_id`) to get info.
+institution(`institution_id`), and experiment(`experiment_id`) to get
+info.
 
 """
 from utils import getJSON
@@ -75,7 +76,8 @@ def main():
         print('  institution:', a.inst)
         print('  experiments:', a.exp)
 
-    base = getJSON(source_id=a.model, activity_id=a.mip, institution_id=a.inst, experiment_id=a.exp)
+    base = getJSON(source_id=a.model, activity_id=a.mip,
+                   institution_id=a.inst, experiment_id=a.exp)
     if (base is None):
         exit(1)
 
