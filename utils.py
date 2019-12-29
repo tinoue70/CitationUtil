@@ -18,25 +18,40 @@ baseGetUrl = 'https://cera-www.dkrz.de/WDCC/ui/cerasearch/cerarest/exportcmip6'
 basePostUrl = "http://ceracite.dkrz.de:5000/api/v1/citation"
 
 
-class Person():
-    def __init__(self, givenName=None, familyName=None,
+class Creator():
+    def __init__(self, givenName=None, familyName=None, fullName=None,
                  email=None, affiliation=None):
-        self.givenName = givenName
-        self.familyName = familyName
+        if fullName != None:
+            self.fullName = fullName
+            self.givenName, self.familyName = fullName.rsplit(' ',1)
+        else:
+            self.givenName = givenName
+            self.familyName = familyName
+            self.fullName = self.givenName+' '+self.familyName
+        self.creatorName = self.familyName + ', ' + self.givenName
         self.email = email
         self.affiliation = affiliation
 
     def __str__(self):
-        return f'{self.creatorName}, {self.email}, {self.affiliation}'
+        return f'"{self.creatorName}", "{self.email}", "{self.affiliation}"'
+
+    def __repr__(self):
+        return (f'Creator("{self.givenName}", "{self.familyName}", "{self.fullName}", '
+                f'"{self.email}", "{self.affiliation}")')
 
 
-class Creator(Person):
-    def __init__(self, *args):
-        super().__init__(*args)
-        self.creatorName = self.familyName + ', ' + self.givenName
+class Experiment():
+    def __init__(self, mip, exp, creators):
+        self.mip = mip
+        self.exp = exp
+        self.creators = creators
 
     def __str__(self):
-        return f'{self.creatorName}, {self.email}, {self.affiliation}'
+        res = f'{self.mip}, \n{self.exp},\n'
+        for c in self.creators:
+            res += c.__str__() + '\n'
+        return res
+
 
 
 def getJSON(source_id=None, activity_id=None,
