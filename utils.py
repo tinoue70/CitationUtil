@@ -60,7 +60,11 @@ def getJSON(source_id=None, activity_id=None,
     Access Citation web cite and get JSON for given CV's.
     """
 
-    drs = '.'.join(['CMIP6', activity_id, institution_id, source_id])
+    try:
+        drs = '.'.join(['CMIP6', activity_id, institution_id, source_id])
+    except:
+        return None
+    
     if experiment_id is not None:
         drs += '.' + experiment_id
     fields = {'input': drs}
@@ -145,8 +149,10 @@ def postJSON(jsonData, extra='check'):
         print('Error:', e)
         return e
 
+    print(r.status)
     if (r.status != 200):
         print('Bad Status:', r.status)
+        print(r.data.decode('utf-8'))
         d = eval(r.data.decode('utf-8'))
         print(d['error'])
     else:

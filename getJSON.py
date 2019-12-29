@@ -23,10 +23,10 @@ __version__ = 'v20191213'
 __date__ = '2019/12/13'
 
 
-mip = 'CMIP'
-model = 'MIROC6'
-institution = 'MIROC'
-experiment = 'historical'
+# mip = 'CMIP'
+# model = 'MIROC6'
+# institution = 'MIROC'
+# experiment = 'historical'
 
 # mip = 'HighResMIP'
 # model = 'NICAM16-7S'
@@ -47,19 +47,19 @@ def my_parser():
     parser.add_argument('-a', '--mip', '--activity_id',
                         type=str,
                         help='MIP(activity_id)',
-                        default=mip)
+                        default=None)
     parser.add_argument('-i', '--inst', '--institution_id',
                         metavar='inst', type=str,
                         help='inst(institution_id)',
-                        default=institution)
+                        default=None)
     parser.add_argument('-s', '--model', '--source_id',
                         type=str,
                         help='model(source_id)',
-                        default=model)
+                        default=None)
     parser.add_argument('-e', '--exp', '--experiment_id',
                         metavar='exp', type=str,
                         help='experiments to submit',
-                        default=experiment)
+                        default=None)
 
     return parser
 
@@ -79,6 +79,7 @@ def main():
     base = getJSON(source_id=a.model, activity_id=a.mip,
                    institution_id=a.inst, experiment_id=a.exp)
     if (base is None):
+        parser.print_help()
         exit(1)
 
     base_title = base['titles'][0]
