@@ -34,32 +34,7 @@ params = {
 desc, epilog = __doc__.split('---')
 
 
-def my_parser():
-    parser = argparse.ArgumentParser(
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        description=desc,
-        epilog=epilog)
-    parser.add_argument(
-        '-s', '--save', type=str, nargs='?', const='', default=None)
-    parser.add_argument(
-        '-l', '--load', type=str, default=None, help='JSON file')
-    parser.add_argument(
-        '-d', '--debug', action='store_true', default=False)
-
-    parser.add_argument(
-        '-I', '--institutionId', type=str, default=None)
-    parser.add_argument(
-        '-S', '--sourceId', type=str, default=None)
-    parser.add_argument(
-        '-D', '--drsId', type=str, default=None)
-    parser.add_argument(
-        '-c', '--complete', type=str, default=None,
-        help="select complete status (True or False)")
-
-    return parser
-
-
-def getJSON():
+def getInfo():
     """
     Access API and get information as JSON format.
     """
@@ -78,7 +53,7 @@ def getJSON():
     return jsonData
 
 
-def loadJSON(fname):
+def loadInfo(fname):
     """
     Load local JSON file instead of accessing API
     """
@@ -89,7 +64,7 @@ def loadJSON(fname):
     return jsonData
 
 
-def saveJSON(docs, fname):
+def saveInfo(docs, fname):
     if not fname:
         datestr = datetime.date.today().strftime('%Y%m%d')
 
@@ -110,39 +85,69 @@ def checkCompleteness(docs):
         print(f'  {d["DRS_ID"]}: {d["CITATION_COMPLETED"]}')
 
 
+def my_parser():
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description=desc,
+        epilog=epilog)
+    parser.add_argument(
+        '-v', '--verbose', action='store_true', default=False)
+
+    parser.add_argument(
+        '--save', type=str, nargs='?', const='', default=None)
+    parser.add_argument(
+        '--load', type=str, default=None, help='JSON file')
+
+    parser.add_argument(
+        '-a', '--mip', '--activity_id', type=str, default=None)
+    parser.add_argument(
+        '-i', '--inst', '--institution_id', type=str, default=None)
+    parser.add_argument(
+        '-s', '--model', '--source_id', type=str, default=None)
+    parser.add_argument(
+        '-e', '--exp', '--experiment_id', type=str, default=None)
+    parser.add_argument(
+        '-d', '--drsId', type=str, default=None)
+    parser.add_argument(
+        '-c', '--complete', type=str, default=None,
+        help="select complete status (True or False)")
+
+    return parser
+
+
 def main():
 
     parser = my_parser()
     a = parser.parse_args()
 
-    if a.debug:
-        print('dbg: arguments:')
+    if a.verbose:
+        print('Arguments:')
         print('  load:', a.load)
         print('  save:', a.save)
-        print('  institutionId:', a.institutionId)
-        print('  sourceId:', a.sourceId)
+        print('  institution_id:', a.inst)
+        print('  source_id:', a.model)
         print('  drsId:', a.drsId)
         print('  complete:', a.complete)
 
-    if a.institutionId:
-        params.update({'institutionId': a.institutionId})
-    if a.sourceId:
-        params.update({'sourceId': a.sourceId})
+    if a.inst:
+        params.update({'institutionId': a.inst})
+    if a.model:
+        params.update({'sourceId': a.model})
     if a.drsId:
         params.update({'drsId': a.drsId})
     if a.complete:
         params.update({'complete': a.complete})
 
     if a.load:
-        docs = loadJSON(a.load)
+        docs = loadInfo(a.load)
     else:
-        docs = getJSON()
+        docs = getInfo()
 
     if not docs:
         return 1
 
     if a.save is not None:
-        saveJSON(docs, a.save)
+        saveInfo(docs, a.save)
 
     checkCompleteness(docs)
 
