@@ -39,6 +39,14 @@ class Creator():
         return (f'Creator("{self.givenName}", "{self.familyName}", "{self.fullName}", '
                 f'"{self.email}", "{self.affiliation}")')
 
+    def toJSON(self):
+        res = {'affiliation': self.affiliation,
+               'creatorName': self.creatorName,
+               'email': self.email,
+               'familyName': self.familyName,
+               'givenName': self.givenName
+               }
+        return res
 
 class Experiment():
     def __init__(self, mip, exp, creators):
