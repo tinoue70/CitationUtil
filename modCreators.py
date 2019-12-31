@@ -34,6 +34,11 @@ def my_parser():
                         help='be verbose.',
                         default=False)
 
+    parser.add_argument('-s', '--save',
+                        action='store_true',
+                        help='save modified JSON.',
+                        default=False)
+
     parser.add_argument('--do_post',
                         dest='post', action='store_true',
                         help='Do POST modified JSON',
@@ -83,6 +88,7 @@ def main():
     if (a.verbose):
         print('Configuration:')
         print('  JSON file:',a.jsonfile)
+        print('  Save:',a.save)
         print('  Excel file:',a.excelfile)
         print('  DoPost:', a.post)
 
@@ -121,9 +127,14 @@ def main():
     else:
         extra = 'check'
 
-    status = postJSON(new_json, extra)
+    if (a.save):
+        with open(a.jsonfile, 'w') as f:
+            json.dump(new_json, f, indent=4)
+    else:
+        status = postJSON(new_json, extra)
+        print(status)
 
-    print(status)
+
     return 0
 
 
