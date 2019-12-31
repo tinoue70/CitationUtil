@@ -25,7 +25,7 @@ __date__ = '2019/12/13'
 
 # mip = 'CMIP'
 # model = 'MIROC6'
-# institution = 'MIROC'
+institution = 'MIROC'
 # experiment = 'historical'
 
 # mip = 'HighResMIP'
@@ -50,8 +50,8 @@ def my_parser():
                         default=None)
     parser.add_argument('-i', '--inst', '--institution_id',
                         metavar='inst', type=str,
-                        help='inst(institution_id)',
-                        default=None)
+                        help='inst(institution_id),default="%(default)s"',
+                        default=institution)
     parser.add_argument('-s', '--model', '--source_id',
                         type=str,
                         help='model(source_id)',
