@@ -2,12 +2,15 @@
 # -*- coding: utf-8-*-
 
 """\
-Submit CMIP6 Citation info of experiment granularity.
+Create CMIP6 Citation info of experiment granularity.
 
 ---
 This script gets base (MIP-granularity) info from the citation service
-or local JSON file, adds experiment informations, then puts it  back to
-the citaion service.
+or local JSON file, adds experiment informations.
+
+Use modJSON.py to modify creator list, if needed.
+
+Use postJSON.py to check/post created JSON file.
 
 You have to specify MIP(`activity_id`), model(`source_id`) to get base
 info, and have to specify experiments(`experiment_id`) to submit
@@ -45,19 +48,9 @@ def my_parser():
                         dest='verbose', action='store_true',
                         help='be verbose.',
                         )
-    parser.add_argument('-p', '--post',
-                        dest='dopost', action='store_true',
-                        help='Do POST.')
-    # parser.add_argument('-g', '--getonly',
-    #                     dest='getonly', action='store_true',
-    #                     help='Get base JSON, only.')
     parser.add_argument('experiments',
                         metavar='exp', type=str, nargs='*',
                         help='experiments to submit')
-    parser.add_argument('-s', '--model', '--source_id',
-                        type=str,
-                        help='model(source_id)',
-                        default=model)
     parser.add_argument('-a', '--mip', '--activity_id',
                         type=str,
                         help='MIP(activity_id)',
@@ -66,6 +59,10 @@ def my_parser():
                         type=str,
                         help='institution(institution_id)',
                         default=inst)
+    parser.add_argument('-s', '--model', '--source_id',
+                        type=str,
+                        help='model(source_id)',
+                        default=model)
 
     parser.add_argument('-l', '--loadfile',
                         type=str,
@@ -104,7 +101,7 @@ def main():
 
     if (a.verbose):
         print('Configuration:')
-        print('  dopost:', a.dopost)
+        # print('  dopost:', a.dopost)
         print('  model:', a.model)
         print('  mip:', a.mip)
         print('  experiments:', a.experiments)
@@ -137,17 +134,16 @@ def main():
 
     for exp in a.experiments:
         data = addExperiment(base, exp)     # base is preserved.
+        data_title = data['titles'][0]
         data_subject = data['subjects'][0]['subject']
-        print('Checking', data_subject)
-        status = postJSON(data, extra='check')
-        if (not isinstance(status, Exception)):
-            if (a.verbose):
-                print("Check status:", status)
-            if (status == 200) and (a.dopost):
-                print('Submitting', data_subject)
-                status = postJSON(data, extra=None)
-                if (status != 200):
-                    print(status)
+        if (a.verbose):
+            print('data title:', data_title)
+            print('data subject:', data_subject)
+        # print(data)
+        fname = setJSONfname(a.model, a.mip, a.inst, exp)
+        with open(fname, 'w') as f:
+            print('Saving base data to:', fname)
+            json.dump(data, f, indent=2)
     print('Done.')
 
     return 0
