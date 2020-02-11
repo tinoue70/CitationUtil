@@ -8,7 +8,7 @@ THis script posts Citaion info to the citation service.
 
 The JSON file can be obtained by getJSON.py, etc.
 
-Without --do-post option, only check is done.
+Without --do_post option, only check is done.
 
 
 """
