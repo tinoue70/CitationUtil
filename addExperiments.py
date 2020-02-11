@@ -48,9 +48,9 @@ def my_parser():
     parser.add_argument('-p', '--post',
                         dest='dopost', action='store_true',
                         help='Do POST.')
-    parser.add_argument('-g', '--getonly',
-                        dest='getonly', action='store_true',
-                        help='Get base JSON, only.')
+    # parser.add_argument('-g', '--getonly',
+    #                     dest='getonly', action='store_true',
+    #                     help='Get base JSON, only.')
     parser.add_argument('experiments',
                         metavar='exp', type=str, nargs='*',
                         help='experiments to submit')
@@ -105,7 +105,6 @@ def main():
     if (a.verbose):
         print('Configuration:')
         print('  dopost:', a.dopost)
-        print('  getonly:', a.getonly)
         print('  model:', a.model)
         print('  mip:', a.mip)
         print('  experiments:', a.experiments)
@@ -136,25 +135,19 @@ def main():
         print('base title:', base_title)
         print('base subject:', base_subject)
 
-    if (a.getonly):
-        fname = base_subject + '.json'
-        with open(fname, 'w') as f:
-            print('Saving base data to:', fname)
-            json.dump(base, f, indent=2)
-    else:
-        for exp in a.experiments:
-            data = addExperiment(base, exp)     # base is preserved.
-            data_subject = data['subjects'][0]['subject']
-            print('Checking', data_subject)
-            status = postJSON(data, extra='check')
-            if (not isinstance(status, Exception)):
-                if (a.verbose):
-                    print("Check status:", status)
-                if (status == 200) and (a.dopost):
-                    print('Submitting', data_subject)
-                    status = postJSON(data, extra=None)
-                    if (status != 200):
-                        print(status)
+    for exp in a.experiments:
+        data = addExperiment(base, exp)     # base is preserved.
+        data_subject = data['subjects'][0]['subject']
+        print('Checking', data_subject)
+        status = postJSON(data, extra='check')
+        if (not isinstance(status, Exception)):
+            if (a.verbose):
+                print("Check status:", status)
+            if (status == 200) and (a.dopost):
+                print('Submitting', data_subject)
+                status = postJSON(data, extra=None)
+                if (status != 200):
+                    print(status)
     print('Done.')
 
     return 0
