@@ -157,7 +157,7 @@ def postJSON(jsonData, extra='check'):
         print('Error:', e)
         return e
 
-    print(r.status)
+#    print(r.status)
     if (r.status != 200):
         print('Bad Status:', r.status)
         print(r.data.decode('utf-8'))
